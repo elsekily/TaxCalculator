@@ -1,0 +1,162 @@
+<div class="row justify-content-center">
+  <div class="col-12 col-lg-10">
+    <p-card styleClass="shadow-lg border-0">
+      <ng-template pTemplate="header">
+        <div class="p-4 bg-primary text-white rounded-top">
+          <h2 class="m-0"><i class="pi pi-calculator me-2"></i>Egypt Tax Calculator</h2>
+          <small class="opacity-75">V{{lastUpdateDate}} - Based on 2026 Law updates</small>
+        </div>
+      </ng-template>
+
+      <div class="row g-4">
+        <!-- Input Section -->
+        <div class="col-12 col-md-5 border-end-md">
+          <h4 class="mb-4 text-secondary">Salary Details</h4>
+          
+          <div class="mb-4">
+            <p-iftalabel>
+              <p-inputNumber 
+                id="monthlyIncome" 
+                [(ngModel)]="monthlyIncome" 
+                (onInput)="onInputChange()"
+                mode="currency" 
+                currency="EGP" 
+                locale="en-EG"
+                [min]="0"
+                styleClass="w-100"
+                inputStyleClass="w-100 p-inputtext-lg">
+              </p-inputNumber>
+              <label for="monthlyIncome">Monthly Gross Salary</label>
+            </p-iftalabel>
+            <div class="mt-2 text-primary fw-bold" *ngIf="annualIncome > 0">
+              Annual Total: {{ annualIncome | currency:'EGP':'symbol':'1.0-0' }}
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <p-iftalabel>
+              <p-inputNumber 
+                id="monthlyAllowances" 
+                [(ngModel)]="monthlyAllowances" 
+                (onInput)="onInputChange()"
+                mode="currency" 
+                currency="EGP" 
+                locale="en-EG"
+                [min]="0"
+                styleClass="w-100"
+                inputStyleClass="w-100 p-inputtext-lg">
+              </p-inputNumber>
+              <label for="monthlyAllowances">Monthly Allowances (Post-tax)</label>
+            </p-iftalabel>
+            <small class="text-muted mt-1 d-block">e.g. Health Insurance, Marty's help, etc.</small>
+          </div>
+
+          <div class="mb-4 d-flex align-items-center">
+            <p-checkbox 
+              [(ngModel)]="includeInsurance" 
+              [binary]="true" 
+              (onChange)="calculate()"
+              id="includeInsurance">
+            </p-checkbox>
+            <label for="includeInsurance" class="ms-2 fw-medium">Include Social Insurance (11%)</label>
+          </div>
+
+          <p-message severity="secondary" icon="pi pi-info-circle">
+            <div class="ms-2">
+              Standard Personal Exemption of <strong>{{ standardExemption | currency:'EGP':'symbol':'1.0-0' }}</strong> is automatically applied.
+            </div>
+          </p-message>
+        </div>
+
+        <!-- Result Section -->
+        <div class="col-12 col-md-7">
+          <h4 class="mb-4 text-secondary">Calculation Results</h4>
+
+          <div *ngIf="result" class="result-container animate-fade-in">
+            <div class="row g-3">
+              <!-- Total Annual Tax -->
+              <div class="col-12">
+                <div class="p-3 border rounded bg-light d-flex justify-content-between align-items-center">
+                  <div>
+                    <span class="text-muted d-block small mb-1 uppercase tracking-wider">Total Annual Tax</span>
+                    <h3 class="text-danger m-0 fw-bold">{{ result.totalAnnualTax | currency:'EGP':'symbol':'1.2-2' }}</h3>
+                  </div>
+                  <div class="text-end" *ngIf="includeInsurance">
+                    <span class="text-muted d-block small mb-1 uppercase tracking-wider">Annual Insurance</span>
+                    <h4 class="text-warning m-0 fw-bold">{{ result.totalAnnualInsurance | currency:'EGP':'symbol':'1.0-0' }}</h4>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Annual Net -->
+              <div class="col-6">
+                <div class="p-3 border rounded">
+                  <span class="text d-block small mb-1">Annual Net Salary</span>
+                  <h4 class="m-0 fw-bold text-success">{{ result.annualNetSalary | currency:'EGP':'symbol':'1.0-0' }}</h4>
+                </div>
+              </div>
+
+              <!-- Monthly Net -->
+              <div class="col-6">
+                <div class="p-3 border rounded bg-primary-lighten">
+                  <span class="text-muted d-block small mb-1">Monthly Net Salary</span>
+                  <h4 class="m-0 fw-bold text-primary">{{ result.monthlyNetSalary | currency:'EGP':'symbol':'1.0-0' }}</h4>
+                </div>
+              </div>
+            </div>
+
+            <p-divider align="left" styleClass="my-4">
+              <span class="p-tag p-tag-secondary">Detailed Breakdown</span>
+            </p-divider>
+
+            <ul class="list-unstyled mb-0">
+              <li class="d-flex justify-content-between mb-2">
+                <span class="text">Net Taxable Income (Annual):</span>
+                <span class="fw-medium">{{ result.annualNetTaxable | currency:'EGP':'symbol':'1.0-0' }}</span>
+              </li>
+              <li class="d-flex justify-content-between mb-2" *ngIf="includeInsurance">
+                <span class="text">Monthly Social Insurance:</span>
+                <span class="text-warning fw-medium">{{ result.monthlyInsurance | currency:'EGP':'symbol':'1.2-2' }}</span>
+              </li>
+              <li class="d-flex justify-content-between mb-2">
+                <span class="text">Monthly Income Tax:</span>
+                <span class="fw-danger text-danger">{{ result.monthlyTax | currency:'EGP':'symbol':'1.2-2' }}</span>
+              </li>
+              <li class="d-flex justify-content-between mb-2" *ngIf="monthlyAllowances > 0">
+                <span class="text">Monthly Allowances:</span>
+                <span class="text-success fw-medium">+ {{ result.monthlyAllowances | currency:'EGP':'symbol':'1.0-0' }}</span>
+              </li>
+            </ul>
+          </div>
+
+          <div *ngIf="!result" class="h-100 d-flex flex-column align-items-center justify-content-center py-5">
+            <i class="pi pi-chart-bar text-muted opacity-25" style="font-size: 4rem"></i>
+            <p class="text-muted mt-3">Enter income details to see calculation</p>
+          </div>
+        </div>
+      </div>
+
+      <ng-template pTemplate="footer">
+        <div class="px-4 py-3 bg-light rounded-bottom">
+          <p class="small text-muted mb-3 text-center">
+            <strong>Disclaimer:</strong> This calculator is for estimation purposes only. Total tax might vary based on your specific employment contract and other deducted fees (e.g. Martyrs Help).
+            <br>
+            Last legislation update: <strong>{{lastUpdateDate}}</strong>.
+          </p>
+          
+          <p-divider></p-divider>
+          
+          <div class="d-flex flex-column align-items-center mt-3">
+            <span class="small fw-bold text-secondary mb-2 uppercase tracking-tight">Created by Youssef Elsekily</span>
+            <div class="d-flex gap-3 social-links">
+              <a href="https://elsekily.github.io/portfolio/" target="_blank" class="text-secondary" title="Portfolio"><i class="pi pi-briefcase"></i></a>
+              <a href="https://github.com/elsekily" target="_blank" class="text-secondary" title="GitHub"><i class="pi pi-github"></i></a>
+              <a href="https://www.linkedin.com/in/youssef-elsekily/" target="_blank" class="text-secondary" title="LinkedIn"><i class="pi pi-linkedin"></i></a>
+              <a href="https://x.com/YoussefElsekily" target="_blank" class="text-secondary" title="X"><i class="pi pi-twitter"></i></a>
+            </div>
+          </div>
+        </div>
+      </ng-template>
+    </p-card>
+  </div>
+</div>

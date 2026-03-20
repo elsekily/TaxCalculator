@@ -1,0 +1,78 @@
+.p-card {
+  overflow: hidden;
+  border-radius: 1rem;
+}
+
+.bg-primary {
+  background: linear-gradient(135deg, #1c4e80 0%, #0091ea 100%) !important;
+}
+
+.bg-primary-lighten {
+  background-color: #e3f2fd;
+}
+
+.border-end-md {
+  border-right: 1px solid #dee2e6;
+}
+
+@media (max-width: 767.98px) {
+  .border-end-md {
+    border-right: none;
+    border-bottom: 1px solid #dee2e6;
+    padding-bottom: 2rem;
+  }
+}
+
+.fw-danger {
+  color: #dc3545;
+}
+
+.uppercase {
+  text-transform: uppercase;
+}
+
+.tracking-wider {
+  letter-spacing: 0.05em;
+}
+
+.result-container {
+  animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+:host ::ng-deep .p-inputnumber-input {
+  font-weight: 600;
+}
+
+:host ::ng-deep .p-iftalabel label {
+  font-weight: 500;
+}
+
+:host ::ng-deep .p-card-body {
+  padding: 2rem;
+}
+
+.social-links a {
+  font-size: 1.25rem;
+  transition: all 0.2s ease-in-out;
+  text-decoration: none;
+}
+
+.social-links a:hover {
+  color: #0d6efd !important;
+  transform: translateY(-3px);
+}
+
+.tracking-tight {
+  letter-spacing: -0.01em;
+}
